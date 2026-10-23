@@ -10,6 +10,6 @@ import gal.dam.biblioteca.modelo.Prestamo;
  * TODO: declara aquí las consultas específicas del enunciado que correspondan a
  * este DAO. Todas reciben la Connection como primer parámetro y lanzan SQLException.
  */
-public interface PrestamoDAO {
+public interface PrestamoDAO extends DAO<Prestamo,Integer>{
 
 }

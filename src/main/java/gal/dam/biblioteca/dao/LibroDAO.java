@@ -10,6 +10,6 @@ import gal.dam.biblioteca.modelo.Libro;
  * TODO: declara aquí las consultas específicas del enunciado que correspondan a
  * este DAO. Todas reciben la Connection como primer parámetro y lanzan SQLException.
  */
-public interface LibroDAO {
-
+public interface LibroDAO extends DAO<Libro,Integer>{
+    
 }

@@ -34,7 +34,8 @@ public class LibroDAOMySQL implements LibroDAO {
 
     /** Convierte la fila actual del ResultSet en un Libro. */
     private Libro mapear(ResultSet rs) throws SQLException {
-        // TODO
-        throw new UnsupportedOperationException("LibroDAOMySQL.mapear");
+        
+        Libro libro = new Libro(rs.getInt("id"),rs.getString("isbn"),rs.getString("titulo"),rs.getInt("anio"),rs.getInt("ejemplares"),rs.getInt("id_genero"));
+        return libro;
     }
 }

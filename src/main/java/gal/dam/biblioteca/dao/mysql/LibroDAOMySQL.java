@@ -1,6 +1,7 @@
 package gal.dam.biblioteca.dao.mysql;
 
 import gal.dam.biblioteca.dao.LibroDAO;
+import gal.dam.biblioteca.dto.FichaSocio;
 import gal.dam.biblioteca.modelo.Libro;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,7 +71,49 @@ public class LibroDAOMySQL implements LibroDAO {
     }
 
     @Override
-    public List<Libro> buscarPorTitulo(String texto) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Libro> buscarPorTitulo(Connection con, String texto) throws SQLException {
+        
+        String sql = "SELECT * FROM biblioteca.libro where titulo like ?";
+        List<Libro> libros = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, String.format("%%%s%%", texto));
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                    libros.add(mapear(rs));
+            }
+        }
+        return libros;
+    }
+
+    @Override
+    public List<Libro> deAutor(Connection con, String nombreAutor) throws SQLException {
+        String sql = "select l.id, l.isbn, l.titulo, l.anio, l.ejemplares, l.id_genero from libro l inner join libro_autor la on l.id = la.id_libro inner join autor a on la.id_autor = a.id where a.nombre like ?";
+        List<Libro> libros = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            
+            ps.setString(1, String.format("%%%s%%", nombreAutor));
+            
+            try(ResultSet rs = ps.executeQuery()){
+            while(rs.next())
+                libros.add(mapear(rs));
+            }
+        }
+        return libros;
+    }
+
+    @Override
+    public List<String> autoresDe(Connection con, int idLibro) throws SQLException {
+        String sql = "select a.nombre from libro l inner join libro_autor la on l.id = la.id_libro inner join autor a on la.id_autor = a.id where l.id like ? order by a.nombre";
+        List<String> autores = new ArrayList<>();
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+          ps.setInt(1, idLibro);
+          try(ResultSet rs = ps.executeQuery()){
+              while(rs.next())
+                  autores.add(rs.getString("a.nombre"));
+          }
+        }
+        return autores;
     }
 }

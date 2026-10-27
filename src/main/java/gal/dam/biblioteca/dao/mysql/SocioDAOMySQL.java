@@ -65,4 +65,17 @@ public class SocioDAOMySQL implements SocioDAO {
                 rs.getObject("fecha_alta",LocalDate.class));
         return socio;
     }
+
+    @Override
+    public Optional<Socio> buscarPorEmail(Connection con, String email) throws SQLException {
+        String sql = "SELECT * FROM biblioteca.socio where email like ?";
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, email);
+            try(ResultSet rs = ps.executeQuery()){
+                
+                    return rs.next() ? Optional.of(mapear(rs)):Optional.empty();
+            }
+        }
+    }
 }

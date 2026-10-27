@@ -1,6 +1,7 @@
 package gal.dam.biblioteca.dao;
 
 import gal.dam.biblioteca.modelo.Libro;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -14,5 +15,9 @@ import java.util.List;
  */
 public interface LibroDAO extends DAO<Libro,Integer>{
     //B.1
-    List<Libro> buscarPorTitulo(String texto) throws SQLException;
+    List<Libro> buscarPorTitulo(Connection con, String texto) throws SQLException;
+    //B.2
+    List<Libro> deAutor(Connection con, String nombreAutor) throws SQLException;
+    //B.3
+    List<String> autoresDe(Connection con, int idLibro) throws SQLException;
 }

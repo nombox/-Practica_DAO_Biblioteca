@@ -48,23 +48,33 @@ public class CatalogoService {
     // ---------- TODO ----------
 
     public List<Libro> listarLibros() throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.listarLibros");
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.listarTodos(con);
+        }
     }
 
     public Optional<Libro> buscarLibro(int id) throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.buscarLibro");
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.buscarPorId(con, id);
+        }
     }
 
     public List<Libro> buscarPorTitulo(String texto) throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.buscarPorTitulo");
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.buscarPorTitulo(con, texto);
+        }
     }
 
     public List<Libro> librosDeAutor(String nombreAutor) throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.librosDeAutor");
+        try(Connection con = ConexionBD.getConexion()){
+            return libroDAO.deAutor(con, nombreAutor);
+        }
     }
 
     public List<String> autoresDe(int idLibro) throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.autoresDe");
+        try(Connection con = ConexionBD.getConexion()){
+            return libroDAO.autoresDe(con, idLibro);
+        }
     }
 
     public List<Libro> nuncaPrestados() throws SQLException {

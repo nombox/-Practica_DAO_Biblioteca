@@ -1,6 +1,9 @@
 package gal.dam.biblioteca.dao;
 
 import gal.dam.biblioteca.modelo.Socio;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * DAO de la tabla socio.
@@ -11,5 +14,5 @@ import gal.dam.biblioteca.modelo.Socio;
  * este DAO. Todas reciben la Connection como primer parámetro y lanzan SQLException.
  */
 public interface SocioDAO extends DAO<Socio, Integer> {
-
+    Optional<Socio> buscarPorEmail(Connection con, String email) throws SQLException;
 }

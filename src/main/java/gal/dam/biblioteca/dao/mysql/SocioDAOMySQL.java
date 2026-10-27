@@ -3,8 +3,11 @@ package gal.dam.biblioteca.dao.mysql;
 import gal.dam.biblioteca.dao.SocioDAO;
 import gal.dam.biblioteca.modelo.Socio;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,20 +24,45 @@ public class SocioDAOMySQL implements SocioDAO {
     @Override
     public Optional<Socio> buscarPorId(Connection con, Integer id) throws SQLException {
         // TODO
-        throw new UnsupportedOperationException("SocioDAOMySQL.buscarPorId");
+        String sql = "SELECT id, nombre, apellidos, email, tipo, fecha_alta from socio where id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            
+            ps.setInt(1, id);
+            
+            try(ResultSet rs = ps.executeQuery()){
+                return rs.next() ? Optional.of(mapear(rs)) : Optional.empty();
+            }
+        }
+        
     }
 
     @Override
     public List<Socio> listarTodos(Connection con) throws SQLException {
         // TODO
-        throw new UnsupportedOperationException("SocioDAOMySQL.listarTodos");
+        String sql = "SELECT id, nombre, apellidos, email, tipo, fecha_alta from socio order by apellidos";
+        List<Socio> socios = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+                socios.add(mapear(rs));
+            }
+        }
+        return socios;
+        
     }
 
     // TODO: consultas específicas
 
     /** Convierte la fila actual del ResultSet en un Socio. */
     private Socio mapear(ResultSet rs) throws SQLException {
-        // TODO
-        throw new UnsupportedOperationException("SocioDAOMySQL.mapear");
+        Socio socio = new Socio(
+                rs.getInt("id"),
+                rs.getString("nombre"),
+                rs.getString("apellidos"),
+                rs.getString("email"),
+                rs.getString("tipo"),
+                rs.getObject("fecha_alta",LocalDate.class));
+        return socio;
     }
 }

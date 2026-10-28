@@ -44,7 +44,9 @@ public class PrestamoService {
     }
 
     public List<Prestamo> activosDeSocio(int idSocio) throws SQLException {
-        throw new UnsupportedOperationException("PrestamoService.activosDeSocio");
+        try(Connection con = ConexionBD.getConexion()){
+            return prestamoDAO.activosDeSocio(con, idSocio);
+        }
     }
 
     public List<PrestamoDetalle> historial(int idSocio) throws SQLException {

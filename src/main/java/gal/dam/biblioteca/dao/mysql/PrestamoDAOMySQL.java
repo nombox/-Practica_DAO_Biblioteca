@@ -25,7 +25,9 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
     @Override
     public Optional<Prestamo> buscarPorId(Connection con, Integer id) throws SQLException {
         // TODO
-        String sql = "SELECT id, id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion FROM prestamo where id = ?";
+        String sql = "SELECT id, id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion "
+                + "FROM prestamo "
+                + "where id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -41,7 +43,9 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
     @Override
     public List<Prestamo> listarTodos(Connection con) throws SQLException {
         // TODO
-        String sql = "SELECT id, id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion FROM prestamo order by fecha_prestamo, id;";
+        String sql = "SELECT id, id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion "
+                + "FROM prestamo "
+                + "order by fecha_prestamo, id;";
         List<Prestamo> prestamos = new ArrayList<>();
 
         try (PreparedStatement ps = con.prepareStatement(sql); 
@@ -68,5 +72,23 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
                 rs.getObject("fecha_devolucion", LocalDate.class));
         return prestamo;
 
+    }
+
+    @Override
+    public List<Prestamo> activosDeSocio(Connection con, int idSocio) throws SQLException {
+        String sql = "SELECT id, id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion "
+                + "FROM biblioteca.prestamo "
+                + "where fecha_devolucion is null and id_socio = ?";
+        List<Prestamo> prestamos = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            
+            ps.setInt(1, idSocio);
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                    prestamos.add(mapear(rs));
+            }
+        }
+        return prestamos;
     }
 }

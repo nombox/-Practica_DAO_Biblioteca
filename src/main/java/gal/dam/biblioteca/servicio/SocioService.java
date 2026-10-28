@@ -6,11 +6,13 @@ import gal.dam.biblioteca.dao.PrestamoDAO;
 import gal.dam.biblioteca.dao.SocioDAO;
 import gal.dam.biblioteca.dto.FichaSocio;
 import gal.dam.biblioteca.modelo.Libro;
+import gal.dam.biblioteca.modelo.Prestamo;
 import gal.dam.biblioteca.modelo.Socio;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -56,11 +58,20 @@ public class SocioService {
      * Si el socio no existe, lanza NoSuchElementException("No existe el socio " + idSocio).
      */
     public FichaSocio fichaSocio(int idSocio) throws SQLException {
-        throw new UnsupportedOperationException("SocioService.fichaSocio");
+        
+        try(Connection con = ConexionBD.getConexion()){
+            Socio socio = socioDAO.buscarPorId(con, idSocio)
+                    .orElseThrow(()-> new NoSuchElementException("No existe el socio " + idSocio));
+                    
+            return new FichaSocio(socio, prestamoDAO.activosDeSocio(con, idSocio));
+        }
+        
     }
 
     public List<Libro> librosLeidosDeGenero(int idSocio, int idGenero) throws SQLException {
-        throw new UnsupportedOperationException("SocioService.librosLeidosDeGenero");
+        try(Connection con = ConexionBD.getConexion()){
+            return libroDAO.prestadosASocioDeGenero(con, idSocio, idGenero);
+        }
     }
 
     public List<Socio> conPrestamosVencidos(LocalDate fechaRef) throws SQLException {

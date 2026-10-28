@@ -88,7 +88,10 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public List<Libro> deAutor(Connection con, String nombreAutor) throws SQLException {
-        String sql = "select l.id, l.isbn, l.titulo, l.anio, l.ejemplares, l.id_genero from libro l inner join libro_autor la on l.id = la.id_libro inner join autor a on la.id_autor = a.id where a.nombre like ?";
+        String sql = "select l.id, l.isbn, l.titulo, l.anio, l.ejemplares, l.id_genero "
+                + "from libro l inner join libro_autor la on l.id = la.id_libro "
+                + "inner join autor a on la.id_autor = a.id "
+                + "where a.nombre like ?";
         List<Libro> libros = new ArrayList<>();
         
         try(PreparedStatement ps = con.prepareStatement(sql)){
@@ -105,7 +108,11 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public List<String> autoresDe(Connection con, int idLibro) throws SQLException {
-        String sql = "select a.nombre from libro l inner join libro_autor la on l.id = la.id_libro inner join autor a on la.id_autor = a.id where l.id like ? order by a.nombre";
+        String sql = "select a.nombre "
+                + "from libro l "
+                + "inner join libro_autor la on l.id = la.id_libro inner join autor a on la.id_autor = a.id "
+                + "where l.id like ? "
+                + "order by a.nombre";
         List<String> autores = new ArrayList<>();
         try(PreparedStatement ps = con.prepareStatement(sql)){
           ps.setInt(1, idLibro);
@@ -115,5 +122,24 @@ public class LibroDAOMySQL implements LibroDAO {
           }
         }
         return autores;
+    }
+
+    @Override
+    public List<Libro> prestadosASocioDeGenero(Connection con, int idSocio, int idGenero) throws SQLException {
+        String sql = "SELECT DISTINCT l.id, l.isbn, l.titulo, l.anio, l.ejemplares, l.id_genero "
+                + "FROM libro l inner join prestamo p on l.id = p.id_libro "
+                + "where p.id_socio = ? and l.id_genero = ? "
+                + "order by l.titulo;";
+        List<Libro> libros = new ArrayList<>(); 
+
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setInt(1, idSocio);
+            ps.setInt(2, idGenero);
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                libros.add(mapear(rs));
+            }
+        }
+        return libros;
     }
 }

@@ -142,4 +142,24 @@ public class LibroDAOMySQL implements LibroDAO {
         }
         return libros;
     }
+
+    @Override
+    public List<Libro> nuncaPrestados(Connection con) throws SQLException {
+        // Alternativa = select l.* from biblioteca.libro l left join biblioteca.prestamo p on l.id = p.id_libro where p.id is null;
+        String sql = "SELECT * "
+                + "FROM biblioteca.libro "
+                + "where not exists("
+                + "select * "
+                + "from biblioteca.prestamo "
+                + "where biblioteca.libro.id = biblioteca.prestamo.id_libro);";
+        List<Libro> libros = new ArrayList<>();
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                    libros.add(mapear(rs));   
+            }
+            
+        }
+        return libros;
+    }
 }

@@ -1,8 +1,11 @@
 package gal.dam.biblioteca.dao;
 
+import gal.dam.biblioteca.dto.PrestamoDetalle;
+
 import gal.dam.biblioteca.modelo.Prestamo;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -16,5 +19,7 @@ import java.util.List;
 public interface PrestamoDAO extends DAO<Prestamo,Integer>{
     //B.5
      List<Prestamo> activosDeSocio(Connection con, int idSocio) throws SQLException;
+    //B.9
+     List<PrestamoDetalle> historial(Connection con, int idSocio) throws SQLException;
      
 }

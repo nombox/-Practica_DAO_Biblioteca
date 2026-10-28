@@ -78,4 +78,24 @@ public class SocioDAOMySQL implements SocioDAO {
             }
         }
     }
+
+    @Override
+    public List<Socio> conPrestamosVencidos(Connection con, LocalDate fechaRef) throws SQLException {
+        String sql = "select distinct s.* \n"
+                + "from socio s \n"
+                + "inner join prestamo p on s.id = p.id_socio \n"
+                + "where p.fecha_devolucion is null and fecha_limite<? order by s.apellidos;";
+        List<Socio> socios = new ArrayList<>();
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setObject(1, fechaRef);
+            
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                    socios.add(mapear(rs));
+            }
+        }
+
+        return socios;
+    }
 }

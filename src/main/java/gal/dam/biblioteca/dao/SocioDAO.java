@@ -3,6 +3,8 @@ package gal.dam.biblioteca.dao;
 import gal.dam.biblioteca.modelo.Socio;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,5 +16,9 @@ import java.util.Optional;
  * este DAO. Todas reciben la Connection como primer parámetro y lanzan SQLException.
  */
 public interface SocioDAO extends DAO<Socio, Integer> {
+    //B.4
     Optional<Socio> buscarPorEmail(Connection con, String email) throws SQLException;
+    //B.8
+    List<Socio> conPrestamosVencidos(Connection con, LocalDate fechaRef) throws SQLException;
+    
 }

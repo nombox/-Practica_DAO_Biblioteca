@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Implementación con JDBC (MySQL) de PrestamoDAO. Para que desaparezcan los
@@ -124,5 +125,37 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
         }
         return prestamosDetalles;
         
+    }
+
+    @Override
+    public List<PrestamoVencido> vencidos(Connection con, LocalDate fechaRef) throws SQLException {
+        String sql
+                = "select p.id, concat(s.nombre, \" \", s.apellidos) as nombre_completo, l.titulo, p.fecha_limite, datediff(?, p.fecha_limite) as dias_retraso \n"
+                + "from prestamo p \n"
+                + "inner join socio s on p.id_socio = s.id \n"
+                + "inner join libro l on p.id_libro = l.id \n"
+                + "where fecha_devolucion is null and datediff(?, p.fecha_limite) > 0 \n"
+                + "order by dias_retraso desc;";
+
+        List<PrestamoVencido> vencidos = new ArrayList<>();
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setObject(1, fechaRef);
+            ps.setObject(2, fechaRef);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    vencidos.add(new PrestamoVencido(
+                            rs.getInt("id"),
+                            rs.getString("nombre_completo"),
+                            rs.getString("titulo"),
+                            rs.getObject("fecha_limite", LocalDate.class),
+                            rs.getInt("dias_retraso")
+                    ));
+                }
+            }
+        }
+        return vencidos;
     }
 }

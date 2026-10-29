@@ -56,7 +56,9 @@ public class PrestamoService {
     }
 
     public List<PrestamoVencido> vencidos(LocalDate fechaRef) throws SQLException {
-        throw new UnsupportedOperationException("PrestamoService.vencidos");
+        try(Connection con = ConexionBD.getConexion()){
+            return prestamoDAO.vencidos(con, fechaRef);
+        }
     }
 
     public List<ResumenGenero> resumenPorGenero() throws SQLException {

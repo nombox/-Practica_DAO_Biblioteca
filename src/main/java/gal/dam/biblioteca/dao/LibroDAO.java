@@ -1,5 +1,6 @@
 package gal.dam.biblioteca.dao;
 
+import gal.dam.biblioteca.dto.LibroDisponible;
 import gal.dam.biblioteca.modelo.Libro;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,5 +25,8 @@ public interface LibroDAO extends DAO<Libro,Integer>{
     List<Libro> prestadosASocioDeGenero(Connection con, int idSocio, int idGenero) throws SQLException;
     //B.7
     List<Libro> nuncaPrestados(Connection con) throws SQLException;
+    //B.11
+    List<LibroDisponible> disponibilidad(Connection con) throws SQLException;
+    
     
 }

@@ -2,6 +2,7 @@ package gal.dam.biblioteca.dao.mysql;
 
 import gal.dam.biblioteca.dao.LibroDAO;
 import gal.dam.biblioteca.dto.FichaSocio;
+import gal.dam.biblioteca.dto.LibroDisponible;
 import gal.dam.biblioteca.modelo.Libro;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -161,5 +162,31 @@ public class LibroDAOMySQL implements LibroDAO {
             
         }
         return libros;
+    }
+
+    @Override
+    public List<LibroDisponible> disponibilidad(Connection con) throws SQLException {
+        String sql = "SELECT id, titulo, ejemplares, ifnull(sin_devolver,0) as sin_devolver, (ejemplares - ifnull(sin_devolver,0)) as disponibles FROM libro l left join (\n"
+                + "select id_libro, count(fecha_prestamo) as sin_devolver \n"
+                + "from prestamo \n"
+                + "where fecha_devolucion is null \n"
+                + "group by id_libro) as p on l.id=p.id_libro\n"
+                + "order by (ejemplares - ifnull(sin_devolver,0)), l.titulo;";
+        List<LibroDisponible> disponibles = new ArrayList<>();
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    disponibles.add(new LibroDisponible(
+                            rs.getInt("id"),
+                            rs.getString("titulo"),
+                            rs.getInt("ejemplares"),
+                            rs.getInt("sin_devolver"),
+                            rs.getInt("disponibles")
+                    ));
+                }
+            }
+        }
+        return disponibles;
     }
 }

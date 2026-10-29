@@ -84,7 +84,9 @@ public class CatalogoService {
     }
 
     public List<LibroDisponible> disponibilidad() throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.disponibilidad");
+        try(Connection con = ConexionBD.getConexion()){
+            return libroDAO.disponibilidad(con);
+        }
     }
 
     public List<LibroPrestamos> masPrestadoPorGenero() throws SQLException {

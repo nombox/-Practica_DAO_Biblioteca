@@ -98,14 +98,14 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
     @Override
     public List<PrestamoDetalle> historial(Connection con, int idSocio) throws SQLException {
         
-        String sql = "SELECT p.id, l.titulo, group_concat(a.nombre order by a.nombre separator \", \"  ) as autores, p.fecha_prestamo, p.fecha_limite, p.fecha_devolucion \n" +
-"FROM prestamo p \n" +
-"inner join libro l on p.id_libro = l.id \n" +
-"inner join libro_autor la on p.id_libro = la.id_libro \n" +
-"inner join autor a on la.id_autor = a.id \n" +
-"where p.id_socio = ? \n" +
-"group by p.id \n" +
-"order by p.fecha_prestamo;";
+        String sql = "SELECT p.id, l.titulo, group_concat(a.nombre order by a.nombre separator \", \"  ) as autores, p.fecha_prestamo, p.fecha_limite, p.fecha_devolucion \n"
+                + "FROM prestamo p \n"
+                + "inner join libro l on p.id_libro = l.id \n"
+                + "inner join libro_autor la on p.id_libro = la.id_libro \n"
+                + "inner join autor a on la.id_autor = a.id \n"
+                + "where p.id_socio = ? \n"
+                + "group by p.id \n"
+                + "order by p.fecha_prestamo;";
         List<PrestamoDetalle> prestamosDetalles = new ArrayList<>();
         
         try(PreparedStatement ps = con.prepareStatement(sql)){

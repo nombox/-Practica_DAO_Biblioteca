@@ -62,6 +62,8 @@ public class PrestamoService {
     }
 
     public List<ResumenGenero> resumenPorGenero() throws SQLException {
-        throw new UnsupportedOperationException("PrestamoService.resumenPorGenero");
+        try(Connection con = ConexionBD.getConexion()){
+            return prestamoDAO.resumenPorGenero(con);
+        }
     }
 }

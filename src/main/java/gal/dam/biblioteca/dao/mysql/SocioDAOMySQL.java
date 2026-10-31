@@ -129,8 +129,17 @@ public class SocioDAOMySQL implements SocioDAO {
 
     @Override
     public List<Socio> lectoresSobreLaMedia(Connection con) throws SQLException {
-        //TODO: Hacer consulta
-        String sql ="";
+        String sql = "select s.id, s.nombre, s.apellidos, s.email, s.tipo, s.fecha_alta, count(p.id) as prestamos \n"
+                + "from prestamo p \n"
+                + "inner join socio s on p.id_socio = s.id \n"
+                + "group by s.id\n"
+                + "having count(p.id)>(\n"
+                + "Select avg(promedio_prestamos)\n"
+                + "from\n"
+                + "(select count(id) as promedio_prestamos\n"
+                + "from prestamo\n"
+                + "group by id_socio) as tabla_derivada\n"
+                + ");";
         List<Socio> socios = new ArrayList<>();
         
         try(PreparedStatement ps = con.prepareStatement(sql)){

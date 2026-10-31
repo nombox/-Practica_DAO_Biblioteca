@@ -3,6 +3,7 @@ package gal.dam.biblioteca.dao.mysql;
 import gal.dam.biblioteca.dao.PrestamoDAO;
 import gal.dam.biblioteca.dto.PrestamoDetalle;
 import gal.dam.biblioteca.dto.PrestamoVencido;
+import gal.dam.biblioteca.dto.ResumenGenero;
 import gal.dam.biblioteca.modelo.Prestamo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -157,5 +158,21 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
             }
         }
         return vencidos;
+    }
+
+    @Override
+    public List<ResumenGenero> resumenPorGenero(Connection con) throws SQLException {
+        //TODO: Falta por hacer consulta
+        String sql = "";
+        List<ResumenGenero> resumenes = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+           try(ResultSet rs = ps.executeQuery()){
+               while(rs.next()){
+                   //resumenes.add(new ResumenGenero());
+               }
+           }
+        }
+        return resumenes;
     }
 }

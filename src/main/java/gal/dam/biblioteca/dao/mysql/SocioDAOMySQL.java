@@ -98,4 +98,20 @@ public class SocioDAOMySQL implements SocioDAO {
 
         return socios;
     }
+
+    @Override
+    public List<Socio> lectoresDeTodoElAutor(Connection con, int idAutor) throws SQLException {
+        //TODO: hacer la consulta
+        String sql = "";
+        List<Socio> socios = new ArrayList<>();
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setInt(1, idAutor);
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next())
+                    socios.add(mapear(rs));
+            }
+        }
+        return socios;
+    }
 }

@@ -90,6 +90,8 @@ public class CatalogoService {
     }
 
     public List<LibroPrestamos> masPrestadoPorGenero() throws SQLException {
-        throw new UnsupportedOperationException("CatalogoService.masPrestadoPorGenero");
+       try(Connection con = ConexionBD.getConexion()){
+           return libroDAO.masPrestadoPorGenero(con);
+       }
     }
 }

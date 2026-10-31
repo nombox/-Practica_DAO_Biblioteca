@@ -22,5 +22,7 @@ public interface SocioDAO extends DAO<Socio, Integer> {
     List<Socio> conPrestamosVencidos(Connection con, LocalDate fechaRef) throws SQLException;
     //B.13
     List<Socio> lectoresDeTodoElAutor(Connection con, int idAutor) throws SQLException;
-    
+    //B.14
+    List<Socio> lectoresSobreLaMedia(Connection con) throws SQLException;
+     
 }

@@ -88,6 +88,8 @@ public class SocioService {
     }
 
     public List<Socio> lectoresSobreLaMedia() throws SQLException {
-        throw new UnsupportedOperationException("SocioService.lectoresSobreLaMedia");
+        try(Connection con = ConexionBD.getConexion()){
+            return socioDAO.lectoresSobreLaMedia(con);
+        }
     }
 }

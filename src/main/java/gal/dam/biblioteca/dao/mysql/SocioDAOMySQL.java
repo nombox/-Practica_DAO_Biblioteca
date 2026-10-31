@@ -101,17 +101,45 @@ public class SocioDAOMySQL implements SocioDAO {
 
     @Override
     public List<Socio> lectoresDeTodoElAutor(Connection con, int idAutor) throws SQLException {
-        //TODO: hacer la consulta
-        String sql = "";
+        String sql = "select s.id, s.nombre, s.apellidos, s.email, s.tipo, s.fecha_alta \n"
+                + "from socio s\n"
+                + "where not exists(\n"
+                + "	select 1\n"
+                + "    from libro_autor la\n"
+                + "    where la.id_autor = ? and\n"
+                + "    not exists(\n"
+                + "	   select 1\n"
+                + "        from prestamo p\n"
+                + "        where la.id_libro = p.id_libro\n"
+                + "        and p.id_socio = s.id\n"
+                + "    )\n"
+                + ")order by s.apellidos;";
+        List<Socio> socios = new ArrayList<>();
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idAutor);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    socios.add(mapear(rs));
+                }
+            }
+        }
+        return socios;
+    }
+
+    @Override
+    public List<Socio> lectoresSobreLaMedia(Connection con) throws SQLException {
+        //TODO: Hacer consulta
+        String sql ="";
         List<Socio> socios = new ArrayList<>();
         
         try(PreparedStatement ps = con.prepareStatement(sql)){
-            ps.setInt(1, idAutor);
             try(ResultSet rs = ps.executeQuery()){
                 while(rs.next())
                     socios.add(mapear(rs));
             }
         }
+        
         return socios;
     }
 }

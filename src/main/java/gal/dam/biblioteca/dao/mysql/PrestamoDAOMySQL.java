@@ -163,15 +163,25 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
     @Override
     public List<ResumenGenero> resumenPorGenero(Connection con) throws SQLException {
         //TODO: Falta por hacer consulta
-        String sql = "";
+        String sql = "select g.nombre, count(p.id) as prestamos, sum(fecha_devolucion>fecha_limite) as con_retraso, round((sum(fecha_devolucion>fecha_limite) * 100)/count(g.id),1) as porcentaje_retraso\n"
+                + "from genero g \n"
+                + "inner join libro l on g.id = l.id_genero \n"
+                + "left join prestamo p on l.id = p.id_libro \n"
+                + "group by g.id \n"
+                + "order by prestamos desc,g.nombre;";
         List<ResumenGenero> resumenes = new ArrayList<>();
-        
-        try(PreparedStatement ps = con.prepareStatement(sql)){
-           try(ResultSet rs = ps.executeQuery()){
-               while(rs.next()){
-                   //resumenes.add(new ResumenGenero());
-               }
-           }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resumenes.add(new ResumenGenero(
+                            rs.getString("nombre"),
+                            rs.getInt("prestamos"),
+                            rs.getInt("con_retraso"),
+                            rs.getDouble("porcentaje_retraso")
+                    ));
+                }
+            }
         }
         return resumenes;
     }

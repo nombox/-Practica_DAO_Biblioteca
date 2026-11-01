@@ -226,7 +226,20 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public Integer insertar(Connection con, Libro t) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "INSERT INTO libro (isbn, titulo, anio, ejemplares, id_genero) VALUES (?,?,?,?,?)";
+        try(PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+            ps.setString(1, t.getIsbn());
+            ps.setString(2, t.getTitulo());
+            ps.setInt(3, t.getAnio());
+            ps.setInt(4, t.getEjemplares());
+            ps.setInt(5, t.getIdGenero());
+            ps.executeUpdate();
+            try(ResultSet rs = ps.getGeneratedKeys()){
+                rs.next();
+                t.setId(rs.getInt(1));
+            }
+        }
+        return t.getId();
     }
 
     @Override
@@ -236,7 +249,16 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public boolean actualizar(Connection con, Libro t) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "UPDATE libro SET isbn = ?, titulo = ?, anio = ?, ejemplares = ?, id_genero = ? where id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, t.getIsbn());
+            ps.setString(2, t.getTitulo());
+            ps.setInt(3, t.getAnio());
+            ps.setInt(4, t.getEjemplares());
+            ps.setInt(5, t.getIdGenero());
+            ps.setInt(6, t.getId());
+            return ps.executeUpdate() == 1;
+        }
     }
 
     @Override
@@ -246,7 +268,12 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public boolean eliminar(Connection con, Integer id) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "DELETE FROM libro WHERE id = ?";
+        
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+        ps.setInt(1, id);
+        return ps.executeUpdate() == 1;
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,7 +163,6 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public List<ResumenGenero> resumenPorGenero(Connection con) throws SQLException {
-        //TODO: Falta por hacer consulta
         String sql = "select g.nombre, count(p.id) as prestamos, sum(fecha_devolucion>fecha_limite) as con_retraso, round((sum(fecha_devolucion>fecha_limite) * 100)/count(g.id),1) as porcentaje_retraso\n"
                 + "from genero g \n"
                 + "inner join libro l on g.id = l.id_genero \n"
@@ -188,7 +188,20 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public Integer insertar(Connection con, Prestamo t) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "INSERT INTO prestamo (id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion) values (?,?,?,?,?)";
+               try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, t.getIdSocio());
+            ps.setInt(2, t.getIdLibro());
+            ps.setObject(3, t.getFechaPrestamo());
+            ps.setObject(4, t.getFechaLimite());
+            ps.setObject(5, t.getFechaDevolucion());
+            ps.executeUpdate();
+            try (ResultSet claves = ps.getGeneratedKeys()) {
+                claves.next();
+                t.setId(claves.getInt(1));
+            }
+        }
+        return t.getId();
     }
 
     @Override
@@ -198,7 +211,16 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public boolean actualizar(Connection con, Prestamo t) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "UPDATE prestamo set id_socio = ?, id_libro = ?, fecha_prestamo = ?, fecha_limite = ?, fecha_devolucion = ? WHERE id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+             ps.setInt(1, t.getIdSocio());
+            ps.setInt(2, t.getIdLibro());
+            ps.setObject(3, t.getFechaPrestamo());
+            ps.setObject(4, t.getFechaLimite());
+            ps.setObject(5, t.getFechaDevolucion());
+            ps.setInt(6, t.getId());
+            return ps.executeUpdate() == 1;
+        }
     }
 
     @Override
@@ -208,7 +230,11 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public boolean eliminar(Connection con, Integer id) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "DELETE FROM prestamo WHERE id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
+        }
     }
 
     @Override

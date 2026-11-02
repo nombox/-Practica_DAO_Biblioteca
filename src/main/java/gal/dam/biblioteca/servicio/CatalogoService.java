@@ -94,4 +94,92 @@ public class CatalogoService {
            return libroDAO.masPrestadoPorGenero(con);
        }
     }
+    
+    //------------------------INSERCIONES BLOQUE D------------------------------
+    
+     public int insertarGenero(Genero genero) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.insertar(con, genero);
+        }
+    }
+
+    public int[] insertarGeneros(List<Genero> generos) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.insertarLote(con, generos);
+        }
+    }
+
+    public boolean actualizarGenero(Genero genero) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.actualizar(con, genero);
+        }
+    }
+
+    public int[] actualizarGeneros(List<Genero> generos) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.actualizarLote(con, generos);
+        }
+    }
+
+    public boolean eliminarGenero(int id) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.eliminar(con, id);
+        }
+    }
+
+    public int[] eliminarGeneros(List<Integer> ids) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return generoDAO.eliminarLote(con, ids);
+        }
+    }
+
+    public int insertarLibro(Libro libro) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.insertar(con, libro);
+        }
+    }
+
+    public int[] insertarLibros(List<Libro> libros, boolean transaccional) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            if (!transaccional) {
+                return libroDAO.insertarLote(con, libros);
+            } else {
+                con.setAutoCommit(false);
+                try {
+                    int[] filas = libroDAO.insertarLote(con, libros);
+                    con.commit();
+                    return filas;
+                } catch (SQLException ex) {
+                    con.rollback();
+                    throw ex;
+                } finally {
+                    con.setAutoCommit(true);
+                }
+            }
+        }
+    }
+
+    public boolean actualizarLibro(Libro libro) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.actualizar(con, libro);
+        }
+    }
+
+    public int[] actualizarLibros(List<Libro> libros) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.actualizarLote(con, libros);
+        }
+    }
+
+    public boolean eliminarLibro(int id) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.eliminar(con, id);
+        }
+    }
+
+    public int[] eliminarLibros(List<Integer> ids) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return libroDAO.eliminarLote(con, ids);
+        }
+    }
 }

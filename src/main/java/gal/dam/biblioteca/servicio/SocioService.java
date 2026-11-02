@@ -92,4 +92,43 @@ public class SocioService {
             return socioDAO.lectoresSobreLaMedia(con);
         }
     }
+    
+    //------------------------INSERCIONES BLOQUE D------------------------------
+    // SocioService
+    public int insertarSocio(Socio socio) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.insertar(con, socio);
+        }
+    }
+
+    public int[] insertarSocios(List<Socio> socios) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.insertarLote(con, socios);
+        }
+    }
+
+    public boolean actualizarSocio(Socio socio) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.actualizar(con, socio);
+        }
+    }
+
+    public int[] actualizarSocios(List<Socio> socios) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.actualizarLote(con, socios);
+        }
+    }
+
+    public boolean eliminarSocio(int id) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.eliminar(con, id);
+        }
+    }
+
+    public int[] eliminarSocios(List<Integer> ids) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return socioDAO.eliminarLote(con, ids);
+        }
+    }
+
 }

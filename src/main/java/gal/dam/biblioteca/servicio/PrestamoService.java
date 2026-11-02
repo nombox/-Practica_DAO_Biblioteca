@@ -66,4 +66,43 @@ public class PrestamoService {
             return prestamoDAO.resumenPorGenero(con);
         }
     }
+    
+    //------------------------INSERCIONES BLOQUE D------------------------------
+    // PrestamoService
+    public int insertarPrestamo(Prestamo prestamo) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.insertar(con, prestamo);
+        }
+    }
+
+    public int[] insertarPrestamos(List<Prestamo> prestamos) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.insertarLote(con, prestamos);
+        }
+    }
+
+    public boolean actualizarPrestamo(Prestamo prestamo) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.actualizar(con, prestamo);
+        }
+    }
+
+    public int[] actualizarPrestamos(List<Prestamo> prestamos) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.actualizarLote(con, prestamos);
+        }
+    }
+
+    public boolean eliminarPrestamo(int id) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.eliminar(con, id);
+        }
+    }
+
+    public int[] eliminarPrestamos(List<Integer> ids) throws SQLException {
+        try (Connection con = ConexionBD.getConexion()) {
+            return prestamoDAO.eliminarLote(con, ids);
+        }
+    }
+
 }

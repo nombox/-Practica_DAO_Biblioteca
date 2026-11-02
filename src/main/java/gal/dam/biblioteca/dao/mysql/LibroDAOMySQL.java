@@ -45,8 +45,7 @@ public class LibroDAOMySQL implements LibroDAO {
         String sql = "SELECT id, isbn, titulo, anio, ejemplares, id_genero FROM biblioteca.libro Order by titulo asc";
         List<Libro> libros = new ArrayList<>();
 
-        try (PreparedStatement ps = con.prepareStatement(sql); 
-                ResultSet rs = ps.executeQuery();) {
+        try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery();) {
 
             while (rs.next()) {
                 libros.add(mapear(rs));
@@ -62,27 +61,28 @@ public class LibroDAOMySQL implements LibroDAO {
     private Libro mapear(ResultSet rs) throws SQLException {
 
         Libro libro = new Libro(
-                rs.getInt("id"), 
-                rs.getString("isbn"), 
-                rs.getString("titulo"), 
-                rs.getInt("anio"), 
-                rs.getInt("ejemplares"), 
+                rs.getInt("id"),
+                rs.getString("isbn"),
+                rs.getString("titulo"),
+                rs.getInt("anio"),
+                rs.getInt("ejemplares"),
                 rs.getInt("id_genero"));
-        
+
         return libro;
     }
 
     @Override
     public List<Libro> buscarPorTitulo(Connection con, String texto) throws SQLException {
-        
+
         String sql = "SELECT * FROM biblioteca.libro where titulo like ?";
         List<Libro> libros = new ArrayList<>();
-        
-        try(PreparedStatement ps = con.prepareStatement(sql)){
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, String.format("%%%s%%", texto));
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next())
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                     libros.add(mapear(rs));
+                }
             }
         }
         return libros;
@@ -95,14 +95,15 @@ public class LibroDAOMySQL implements LibroDAO {
                 + "inner join autor a on la.id_autor = a.id "
                 + "where a.nombre like ?";
         List<Libro> libros = new ArrayList<>();
-        
-        try(PreparedStatement ps = con.prepareStatement(sql)){
-            
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setString(1, String.format("%%%s%%", nombreAutor));
-            
-            try(ResultSet rs = ps.executeQuery()){
-            while(rs.next())
-                libros.add(mapear(rs));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    libros.add(mapear(rs));
+                }
             }
         }
         return libros;
@@ -116,12 +117,13 @@ public class LibroDAOMySQL implements LibroDAO {
                 + "where l.id like ? "
                 + "order by a.nombre";
         List<String> autores = new ArrayList<>();
-        try(PreparedStatement ps = con.prepareStatement(sql)){
-          ps.setInt(1, idLibro);
-          try(ResultSet rs = ps.executeQuery()){
-              while(rs.next())
-                  autores.add(rs.getString("a.nombre"));
-          }
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idLibro);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    autores.add(rs.getString("a.nombre"));
+                }
+            }
         }
         return autores;
     }
@@ -132,14 +134,15 @@ public class LibroDAOMySQL implements LibroDAO {
                 + "FROM libro l inner join prestamo p on l.id = p.id_libro "
                 + "where p.id_socio = ? and l.id_genero = ? "
                 + "order by l.titulo;";
-        List<Libro> libros = new ArrayList<>(); 
+        List<Libro> libros = new ArrayList<>();
 
-        try(PreparedStatement ps = con.prepareStatement(sql)){
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idSocio);
             ps.setInt(2, idGenero);
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next())
-                libros.add(mapear(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    libros.add(mapear(rs));
+                }
             }
         }
         return libros;
@@ -155,12 +158,13 @@ public class LibroDAOMySQL implements LibroDAO {
                 + "from biblioteca.prestamo "
                 + "where biblioteca.libro.id = biblioteca.prestamo.id_libro);";
         List<Libro> libros = new ArrayList<>();
-        try(PreparedStatement ps = con.prepareStatement(sql)){
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next())
-                    libros.add(mapear(rs));   
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    libros.add(mapear(rs));
+                }
             }
-            
+
         }
         return libros;
     }
@@ -227,14 +231,14 @@ public class LibroDAOMySQL implements LibroDAO {
     @Override
     public Integer insertar(Connection con, Libro t) throws SQLException {
         String sql = "INSERT INTO libro (isbn, titulo, anio, ejemplares, id_genero) VALUES (?,?,?,?,?)";
-        try(PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+        try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, t.getIsbn());
             ps.setString(2, t.getTitulo());
             ps.setInt(3, t.getAnio());
             ps.setInt(4, t.getEjemplares());
             ps.setInt(5, t.getIdGenero());
             ps.executeUpdate();
-            try(ResultSet rs = ps.getGeneratedKeys()){
+            try (ResultSet rs = ps.getGeneratedKeys()) {
                 rs.next();
                 t.setId(rs.getInt(1));
             }
@@ -244,13 +248,32 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public int[] insertarLote(Connection con, List<Libro> lista) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "INSERT INTO libro (isbn, titulo, anio, ejemplares, id_genero) VALUES (?,?,?,?,?)";
+        try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            for (Libro t : lista) {
+                ps.setString(1, t.getIsbn());
+                ps.setString(2, t.getTitulo());
+                ps.setInt(3, t.getAnio());
+                ps.setInt(4, t.getEjemplares());
+                ps.setInt(5, t.getIdGenero());
+                ps.addBatch();
+            }
+            int[] filas = ps.executeBatch();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                int i = 0;
+                while (rs.next()) {
+                    lista.get(i++).setId(rs.getInt(1));
+                }
+            }
+            return filas;
+        }
+
     }
 
     @Override
     public boolean actualizar(Connection con, Libro t) throws SQLException {
         String sql = "UPDATE libro SET isbn = ?, titulo = ?, anio = ?, ejemplares = ?, id_genero = ? where id = ?";
-        try(PreparedStatement ps = con.prepareStatement(sql)){
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, t.getIsbn());
             ps.setString(2, t.getTitulo());
             ps.setInt(3, t.getAnio());
@@ -263,21 +286,42 @@ public class LibroDAOMySQL implements LibroDAO {
 
     @Override
     public int[] actualizarLote(Connection con, List<Libro> lista) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "UPDATE libro SET isbn = ?, titulo = ?, anio = ?, ejemplares = ?, id_genero = ? where id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            for (Libro t : lista) {
+                ps.setString(1, t.getIsbn());
+                ps.setString(2, t.getTitulo());
+                ps.setInt(3, t.getAnio());
+                ps.setInt(4, t.getEjemplares());
+                ps.setInt(5, t.getIdGenero());
+                ps.setInt(6, t.getId());
+                ps.addBatch();
+            }
+            return ps.executeBatch();
+        }
     }
 
     @Override
     public boolean eliminar(Connection con, Integer id) throws SQLException {
         String sql = "DELETE FROM libro WHERE id = ?";
-        
-        try(PreparedStatement ps = con.prepareStatement(sql)){
-        ps.setInt(1, id);
-        return ps.executeUpdate() == 1;
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
         }
     }
 
     @Override
     public int[] eliminarLote(Connection con, List<Integer> ids) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "DELETE FROM libro WHERE id = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            for (Integer id : ids) {
+                ps.setInt(1, id);
+                ps.addBatch();
+            }
+
+            return ps.executeBatch();
+        }
     }
 }

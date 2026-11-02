@@ -206,7 +206,27 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public int[] insertarLote(Connection con, List<Prestamo> lista) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "INSERT INTO prestamo (id_socio, id_libro, fecha_prestamo, fecha_limite, fecha_devolucion) values (?,?,?,?,?)";
+        try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            for(Prestamo t: lista){
+            ps.setInt(1, t.getIdSocio());
+            ps.setInt(2, t.getIdLibro());
+            ps.setObject(3, t.getFechaPrestamo());
+            ps.setObject(4, t.getFechaLimite());
+            ps.setObject(5, t.getFechaDevolucion());
+            ps.addBatch();  
+            }
+            int[] filas = ps.executeBatch();
+            
+            try (ResultSet claves = ps.getGeneratedKeys()) {
+                int i = 0;
+                while(claves.next()){
+                lista.get(i++).setId(claves.getInt(1));
+                }
+                
+            }
+            return filas;
+        }
     }
 
     @Override
@@ -225,7 +245,20 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public int[] actualizarLote(Connection con, List<Prestamo> lista) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "UPDATE prestamo set id_socio = ?, id_libro = ?, fecha_prestamo = ?, fecha_limite = ?, fecha_devolucion = ? WHERE id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            for(Prestamo t: lista){
+            ps.setInt(1, t.getIdSocio());
+            ps.setInt(2, t.getIdLibro());
+            ps.setObject(3, t.getFechaPrestamo());
+            ps.setObject(4, t.getFechaLimite());
+            ps.setObject(5, t.getFechaDevolucion());
+            ps.setInt(6, t.getId());
+            ps.addBatch();
+            }
+
+            return ps.executeBatch();
+        }
     }
 
     @Override
@@ -239,6 +272,14 @@ public class PrestamoDAOMySQL implements PrestamoDAO {
 
     @Override
     public int[] eliminarLote(Connection con, List<Integer> ids) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "DELETE FROM prestamo WHERE id = ?";
+        try(PreparedStatement ps = con.prepareStatement(sql)){
+            for(Integer id: ids){
+            ps.setInt(1, id);
+            ps.addBatch();
+            }
+            
+            return ps.executeBatch();
+        } 
     }
 }
